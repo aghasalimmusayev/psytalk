@@ -5,6 +5,9 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CleanupModule } from './cleanup/cleanup.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -19,8 +22,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true // Yalnız development-də true
     }),
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 5 }]),
+    ScheduleModule.forRoot(),
     AuthModule,
-    UsersModule
+    UsersModule,
+    CleanupModule
   ],
   controllers: [AppController],
   providers: [AppService],

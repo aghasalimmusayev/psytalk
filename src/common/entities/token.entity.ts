@@ -11,6 +11,9 @@ export class TokenEntity extends CommonEntity {
     @Column({ type: 'enum', enum: TokenType })
     type: TokenType;
 
+    @Column({ unique: true })
+    jti: string
+
     @Column()
     expiresAt: Date
 
