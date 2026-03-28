@@ -1,3 +1,8 @@
+Postgresql-de deyisilesi yerler
+   - CommonEntity
+   - app.module
+   - user.entity
+   - token.entity
 
 
 📧 emailVerificationToken
@@ -22,3 +27,22 @@
    - DB-dəki token === linkdəki token?
    - passwordResetExpires < new Date()? (vaxtı keçibmi?)
 8. Hər şey OK → şifrə yenilənir, token silinir
+
+Commit2
+* psytalk_db database created
+   - auth.module created
+   - users.module created
+Commit3
+* new methods, services
+   - register method created
+   - login method created
+   - refreshToken method created
+   - serializer added
+   - rateLimit added
+   - cleanup.service created
+Commit4
+* New methods
+   - Sqlite3 integration for development
+   - GetAllUsers
+   - DeleteUser
+   - all routes were tested

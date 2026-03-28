@@ -8,10 +8,10 @@ export class UserDto {
     email: string
 
     @Expose()
-    name: string
+    firstName: string
 
     @Expose()
-    surname: string
+    lastName: string
 
     @Expose()
     role: string

@@ -10,6 +10,7 @@ import { CreateUserDto } from 'src/common/dtos/createUser.dto';
 import { LoginDto } from 'src/common/dtos/login.dto';
 import { UsersService } from 'src/users/users.service';
 import ms, { StringValue } from 'ms'
+import { TokenType } from 'src/common/types';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
         const hashedPassword = await bcrypt.hash(data.password, 10)
         const user = this.repo.create({ ...data, password: hashedPassword })
         await this.repo.save(user)
-        const { accessToken, refreshToken } = await this.generateAndSaveTokens(user)
+        const { accessToken, refreshToken } = await this.generateTokens(user)
         // await mailer
         return { user, accessToken, refreshToken }
     }
@@ -37,7 +38,7 @@ export class AuthService {
         if (!user) throw new UnauthorizedException('Invalid email or password')
         const verify = await bcrypt.compare(data.password, user.password)
         if (!verify) throw new UnauthorizedException('Invalid email or password')
-        const { accessToken, refreshToken } = await this.generateAndSaveTokens(user)
+        const { accessToken, refreshToken } = await this.generateTokens(user)
         return { user, accessToken, refreshToken }
     }
 
@@ -59,11 +60,11 @@ export class AuthService {
         if (!isValid) throw new UnauthorizedException('Invalid token')
         const user = token.user
         await this.tokenRepo.update({ jti: payload.jti }, { isRevoked: true })
-        const { accessToken, refreshToken } = await this.generateAndSaveTokens(user)
+        const { accessToken, refreshToken } = await this.generateTokens(user)
         return { accessToken, refreshToken }
     }
 
-    private async generateAndSaveTokens(user: User) {
+    private async generateTokens(user: User) {
         const accessToken = await generateAccessToken(this.jwt, {
             id: user.id,
             email: user.email,
@@ -73,7 +74,7 @@ export class AuthService {
         const { refreshToken, jti } = await generateRefreshToken(this.jwt, user)
         const hashedToken = await bcrypt.hash(refreshToken, 10)
         const expiresAt = new Date(Date.now() + ms(process.env.JWT_REFRESH_TIME as StringValue))
-        const token = this.tokenRepo.create({ tokenHash: hashedToken, jti, expiresAt, user })
+        const token = this.tokenRepo.create({ tokenHash: hashedToken, jti, expiresAt, user, type: TokenType.REFRESH })
         await this.tokenRepo.save(token)
         return { accessToken, refreshToken }
     }

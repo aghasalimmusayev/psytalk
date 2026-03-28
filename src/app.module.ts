@@ -11,15 +11,21 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '1030',
-      database: 'psytalk_db',
+    // TypeOrmModule.forRoot({ //! sonda Postgresql-e kecilsin
+    //   type: 'postgres',
+    //   host: 'localhost',
+    //   port: 5432,
+    //   username: 'postgres',
+    //   password: '1030',
+    //   database: 'psytalk_db',
+    //   entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    //   synchronize: false // Yalnız development-də true
+    // }),
+    TypeOrmModule.forRoot({ //! Muveqqeti olaraq Sqlite istifadesi
+      type: 'sqlite',
+      database: 'psytalk_dev.db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true // Yalnız development-də true
+      synchronize: true,
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 5 }]),

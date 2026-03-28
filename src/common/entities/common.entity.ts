@@ -5,9 +5,11 @@ export class CommonEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
-    @CreateDateColumn({ type: 'timestamp' })
+    //! @CreateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'datetime' })
     createdAt: Date
 
-    @UpdateDateColumn({ type: 'timestamp', default: null })
+    //! @UpdateDateColumn({ type: 'timestamp', default: null })
+    @UpdateDateColumn({ type: 'datetime', default: null })
     updatedAt: Date
 }

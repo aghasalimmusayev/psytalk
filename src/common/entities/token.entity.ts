@@ -8,7 +8,8 @@ export class TokenEntity extends CommonEntity {
     @Column()
     tokenHash: string
 
-    @Column({ type: 'enum', enum: TokenType })
+    //! @Column({ type: 'enum', enum: TokenType })
+    @Column({ type: 'varchar' })
     type: TokenType;
 
     @Column({ unique: true })

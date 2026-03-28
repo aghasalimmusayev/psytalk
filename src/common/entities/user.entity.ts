@@ -11,16 +11,18 @@ export class User extends CommonEntity {
     @Column({ nullable: true })          // Google login-də null ola bilər
     password: string;
 
-    @Column({ type: 'enum', enum: UserRole })
+    //! @Column({ type: 'enum', enum: UserRole })
+    @Column({ type: 'varchar' })
     role: UserRole;
 
-    @Column({ type: 'enum', enum: AuthProvider, default: AuthProvider.LOCAL })
+    //! @Column({ type: 'enum', enum: AuthProvider, default: AuthProvider.LOCAL })
+    @Column({ type: 'varchar', default: AuthProvider.LOCAL })
     authProvider: AuthProvider;
 
     @Column()
     firstName: string;
 
-    @Column()
+    @Column({ nullable: true })
     lastName: string;
 
     @Column({ nullable: true })
@@ -29,8 +31,9 @@ export class User extends CommonEntity {
     @Column({ nullable: true })
     dateOfBirth: Date;
 
-    @Column({ nullable: true, type: 'enum', enum: ['male', 'female'] })
-    gender: string;
+    //! @Column({ nullable: true, type: 'enum', enum: ['male', 'female'] })
+    @Column({ type: 'text', nullable: true })
+    gender: 'male' | 'female';
 
     @Column({ nullable: true })
     avatarUrl: string;
