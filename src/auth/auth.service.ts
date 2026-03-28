@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TokenEntity } from 'src/common/entities/token.entity';
 import { User } from 'src/common/entities/user.entity';
 import { generateAccessToken, generateRefreshToken, } from 'src/common/jwtToken';
-import { Repository } from 'typeorm';
+import { Any, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { CreateUserDto } from 'src/common/dtos/createUser.dto';
 import { LoginDto } from 'src/common/dtos/login.dto';
@@ -62,6 +62,29 @@ export class AuthService {
         await this.tokenRepo.update({ jti: payload.jti }, { isRevoked: true })
         const { accessToken, refreshToken } = await this.generateTokens(user)
         return { accessToken, refreshToken }
+    }
+
+    async logout(refreshToken: string) {
+        let payload: any
+        try {
+            payload = await this.jwt.verifyAsync(refreshToken, { secret: process.env.JWT_REFRESH_SECRET })
+        } catch (err) {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+        const result = await this.tokenRepo.update(
+            { jti: payload.jti, isRevoked: false },
+            { isRevoked: true }
+        )
+        if (result.affected === 0) throw new UnauthorizedException('Invalid or alreay revoked token')
+        return { message: 'You have logged out' }
+    }
+
+    async logoutAll(userId: number) {
+        await this.tokenRepo.update(
+            { user: { id: userId }, isRevoked: false },
+            { isRevoked: true }
+        )
+        return { message: 'You have logged out from all devices' }
     }
 
     private async generateTokens(user: User) {

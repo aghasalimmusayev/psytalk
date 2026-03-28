@@ -46,3 +46,9 @@ Commit4
    - GetAllUsers
    - DeleteUser
    - all routes were tested
+Commit5
+New methods and functions
+   - AuthGuard
+   - RoleGuard
+   - CurrentUser decorator
+   - Role decorator
