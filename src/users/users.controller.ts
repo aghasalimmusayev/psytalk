@@ -1,6 +1,7 @@
-import { Controller, Delete, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Controller, Delete, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBasicAuth } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @ApiBasicAuth()
 @Controller('users')
@@ -13,6 +14,7 @@ export class UsersController {
     }
 
     @Delete('/:id')
+    @UseGuards(AuthGuard)
     removeUser(@Param('id', ParseIntPipe) id: number) {
         return this.userService.delete(id)
     }

@@ -11,6 +11,8 @@ import { LoginDto } from 'src/common/dtos/login.dto';
 import { UsersService } from 'src/users/users.service';
 import ms, { StringValue } from 'ms'
 import { TokenType } from 'src/common/types';
+import { MailService } from 'src/mail/mail.service';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +20,8 @@ export class AuthService {
         @InjectRepository(User) private repo: Repository<User>,
         @InjectRepository(TokenEntity) private tokenRepo: Repository<TokenEntity>,
         private userService: UsersService,
-        private jwt: JwtService
+        private jwt: JwtService,
+        private mailService: MailService
     ) { }
 
     async signup(data: CreateUserDto) {
@@ -27,8 +30,22 @@ export class AuthService {
         const hashedPassword = await bcrypt.hash(data.password, 10)
         const user = this.repo.create({ ...data, password: hashedPassword })
         await this.repo.save(user)
+
+        const plainToken = randomBytes(32).toString('hex')
+        const hashedToken = await bcrypt.hash(plainToken, 10)
+        const expires = new Date(Date.now() + ms('24h' as StringValue))
+        const verifyToken = this.tokenRepo.create({
+            jti: plainToken,
+            tokenHash: hashedToken,
+            type: TokenType.EMAIL_VERIFY,
+            expiresAt: expires,
+            isRevoked: false,
+            user
+        })
+        await this.tokenRepo.save(verifyToken)
+
         const { accessToken, refreshToken } = await this.generateTokens(user)
-        // await mailer
+        await this.mailService.sendWelcome(user.email, user.firstName, plainToken)
         return { user, accessToken, refreshToken }
     }
 
@@ -87,6 +104,30 @@ export class AuthService {
         return { message: 'You have logged out from all devices' }
     }
 
+    async verifyEmail(token: string) {
+        const tokenVerify = await this.tokenRepo.findOne({
+            where: {
+                jti: token,
+                type: TokenType.EMAIL_VERIFY,
+                isRevoked: false
+            },
+            relations: ['user']
+        })
+        if (!tokenVerify) throw new BadRequestException('Invalid token')
+        if (tokenVerify.expiresAt < new Date()) {
+            tokenVerify.isRevoked = true
+            await this.tokenRepo.save(tokenVerify)
+            throw new BadRequestException('Token expired. Please request a new verification email.')
+        }
+        tokenVerify.isRevoked = true
+        await this.tokenRepo.save(tokenVerify)
+        await this.repo.update(
+            { id: tokenVerify.user.id },
+            { isEmailVerified: true })
+        await this.mailService.sendEmailVerified(tokenVerify.user.email, tokenVerify.user.firstName)
+        return { message: 'Email verified successfully' }
+    }
+
     private async generateTokens(user: User) {
         const accessToken = await generateAccessToken(this.jwt, {
             id: user.id,
@@ -96,7 +137,7 @@ export class AuthService {
         })
         const { refreshToken, jti } = await generateRefreshToken(this.jwt, user)
         const hashedToken = await bcrypt.hash(refreshToken, 10)
-        const expiresAt = new Date(Date.now() + ms(process.env.JWT_REFRESH_TIME as StringValue))
+        const expiresAt = new Date(Date.now() + ms((process.env.JWT_REFRESH_TIME ?? '7d') as StringValue))
         const token = this.tokenRepo.create({ tokenHash: hashedToken, jti, expiresAt, user, type: TokenType.REFRESH })
         await this.tokenRepo.save(token)
         return { accessToken, refreshToken }

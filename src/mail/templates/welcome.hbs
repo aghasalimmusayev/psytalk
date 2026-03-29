@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="az">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>PSYTALK-ə Xoş Gəldiniz</title>
+    <!--[if mso]>
+    <noscript>
+      <xml>
+        <o:OfficeDocumentSettings>
+          <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+      </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+      /* Reset */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f0f4f8;
+        color: #2d3748;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { text-decoration: none; }
+      img { border: 0; display: block; }
+
+      /* Layout */
+      .email-wrapper {
+        width: 100%;
+        background-color: #f0f4f8;
+        padding: 40px 16px;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, #5b6af0 0%, #7c3aed 100%);
+        padding: 48px 40px 40px;
+        text-align: center;
+      }
+      .logo-mark {
+        display: inline-block;
+        background: rgba(255,255,255,0.15);
+        border-radius: 14px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+      }
+      .logo-text {
+        font-size: 26px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 2px;
+      }
+      .logo-dot {
+        color: #a5f3fc;
+      }
+      .header-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.3;
+        margin-bottom: 8px;
+      }
+      .header-subtitle {
+        font-size: 15px;
+        color: rgba(255,255,255,0.80);
+        font-weight: 400;
+      }
+
+      /* Wave divider */
+      .wave {
+        display: block;
+        width: 100%;
+        height: 48px;
+        background: linear-gradient(135deg, #5b6af0 0%, #7c3aed 100%);
+        clip-path: ellipse(55% 100% at 50% 0%);
+      }
+
+      /* Body */
+      .body-content {
+        padding: 40px 40px 32px;
+      }
+      .greeting {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 16px;
+      }
+      .greeting span {
+        color: #5b6af0;
+      }
+      .intro-text {
+        font-size: 15px;
+        color: #4a5568;
+        line-height: 1.75;
+        margin-bottom: 32px;
+      }
+
+      /* Features section */
+      .section-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #7c3aed;
+        margin-bottom: 16px;
+      }
+      .features-grid {
+        display: table;
+        width: 100%;
+        margin-bottom: 32px;
+        border-spacing: 0;
+      }
+      .feature-item {
+        display: table-row;
+      }
+      .feature-icon-cell {
+        display: table-cell;
+        vertical-align: top;
+        padding: 0 14px 18px 0;
+        width: 48px;
+      }
+      .feature-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        line-height: 44px;
+        text-align: center;
+      }
+      .icon-blue  { background-color: #ede9fe; }
+      .icon-teal  { background-color: #ccfbf1; }
+      .icon-amber { background-color: #fef3c7; }
+      .feature-text-cell {
+        display: table-cell;
+        vertical-align: top;
+        padding-bottom: 18px;
+      }
+      .feature-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 3px;
+      }
+      .feature-desc {
+        font-size: 13px;
+        color: #718096;
+        line-height: 1.6;
+      }
+
+      /* Divider */
+      .divider {
+        height: 1px;
+        background-color: #e2e8f0;
+        margin: 0 0 28px 0;
+      }
+
+      /* CTA */
+      .cta-section {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .cta-text {
+        font-size: 15px;
+        color: #4a5568;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+      .cta-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #5b6af0, #7c3aed);
+        color: #ffffff !important;
+        font-size: 15px;
+        font-weight: 700;
+        padding: 14px 36px;
+        border-radius: 50px;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 14px rgba(91,106,240,0.35);
+      }
+
+      /* Note box */
+      .note-box {
+        background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+        border-left: 4px solid #7c3aed;
+        border-radius: 0 10px 10px 0;
+        padding: 16px 20px;
+        margin-bottom: 32px;
+      }
+      .note-box p {
+        font-size: 13px;
+        color: #4c1d95;
+        line-height: 1.65;
+      }
+      .note-box strong {
+        font-weight: 700;
+      }
+
+      /* Footer */
+      .footer {
+        background-color: #1e1b4b;
+        padding: 32px 40px;
+        text-align: center;
+      }
+      .footer-logo {
+        font-size: 18px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+      }
+      .footer-tagline {
+        font-size: 12px;
+        color: rgba(255,255,255,0.5);
+        margin-bottom: 20px;
+      }
+      .footer-links {
+        margin-bottom: 20px;
+      }
+      .footer-links a {
+        font-size: 12px;
+        color: rgba(255,255,255,0.6);
+        margin: 0 10px;
+      }
+      .footer-links a:hover {
+        color: #a5b4fc;
+      }
+      .footer-copy {
+        font-size: 11px;
+        color: rgba(255,255,255,0.35);
+        line-height: 1.6;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 480px) {
+        .email-wrapper { padding: 20px 8px; }
+        .header { padding: 36px 24px 32px; }
+        .header-title { font-size: 22px; }
+        .body-content { padding: 28px 24px 24px; }
+        .footer { padding: 24px 20px; }
+        .cta-button { padding: 13px 28px; font-size: 14px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="email-wrapper">
+      <div class="email-container">
+
+        <!-- ═══ HEADER ═══ -->
+        <div class="header">
+          <div class="logo-mark">
+            <span class="logo-text">PSY<span class="logo-dot">•</span>TALK</span>
+          </div>
+          <h1 class="header-title">Xoş gəldiniz,<br/>{{firstName}}! 🎉</h1>
+          <p class="header-subtitle">Psixoloji sağlamlığınıza aparan yolun ilk addımı</p>
+        </div>
+
+        <!-- wave -->
+        <div style="height:24px; background:#ffffff; position:relative;">
+          <div style="position:absolute; top:0; left:0; right:0; height:24px;
+                      background:linear-gradient(135deg,#5b6af0 0%,#7c3aed 100%);
+                      border-radius:0 0 50% 50%/0 0 24px 24px;">
+          </div>
+        </div>
+
+        <!-- ═══ BODY ═══ -->
+        <div class="body-content">
+
+          <p class="greeting">Salam, <span>{{firstName}}</span>! 👋</p>
+          <p class="intro-text">
+            PSYTALK ailəsinə qoşulduğunuz üçün təşəkkür edirik. Platformamız
+            sizi peşəkar psixoloqlarla bir araya gətirir — gizlilik, güvən
+            və professional yanaşma ilə. Psixoloji sağlamlığınız üçün doğru
+            yerdəsiniz.
+          </p>
+
+          <!-- Features -->
+          <p class="section-label">Platformada nə var?</p>
+          <div class="features-grid">
+
+            <div class="feature-item">
+              <div class="feature-icon-cell">
+                <div class="feature-icon icon-blue">🧠</div>
+              </div>
+              <div class="feature-text-cell">
+                <p class="feature-title">Peşəkar Psixoloqlar</p>
+                <p class="feature-desc">Diplom yoxlanışından keçmiş, sertifikatlaşdırılmış
+                  mütəxəssislərlə onlayn seans keçirin.</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-icon-cell">
+                <div class="feature-icon icon-teal">🔒</div>
+              </div>
+              <div class="feature-text-cell">
+                <p class="feature-title">Tam Məxfilik</p>
+                <p class="feature-desc">Anonim profil seçimi ilə məlumatlarınız
+                  qorunur. Söhbətləriniz şifrələnir.</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-icon-cell">
+                <div class="feature-icon icon-amber">📚</div>
+              </div>
+              <div class="feature-text-cell">
+                <p class="feature-title">Təlim Marketplace</p>
+                <p class="feature-desc">Psixoloji seminarlar, workshoplar və
+                  testlərə çıxış əldə edin.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Note -->
+          <div class="note-box">
+            <p>
+              ⚠️ <strong>Qeyd:</strong> Hesabınızı tam aktivləşdirmək üçün
+              email ünvanınızı təsdiqləyin. Yaxın zamanda sizə doğrulama
+              linki göndəriləcək.
+            </p>
+          </div>
+
+          <!-- CTA -->
+          <div class="cta-section">
+            <p class="cta-text">
+              İndi platformaya daxil olun və özünüzə ən uyğun psixoloqu tapın.
+            </p>
+            <a href="{{platformUrl}}" class="cta-button">
+              Platformaya Keçid et →
+            </a>
+          </div>
+
+        </div>
+
+        <!-- ═══ FOOTER ═══ -->
+        <div class="footer">
+          <p class="footer-logo">PSY•TALK</p>
+          <p class="footer-tagline">Psixoloji sağlamlıq — hər kəs üçün</p>
+
+          <div class="footer-links">
+            <a href="{{platformUrl}}/privacy">Məxfilik Siyasəti</a>
+            <a href="{{platformUrl}}/terms">İstifadə Şərtləri</a>
+            <a href="{{platformUrl}}/support">Dəstək</a>
+          </div>
+
+          <p class="footer-copy">
+            © 2026 PSYTALK MMC. Bütün hüquqlar qorunur.<br/>
+            Bakı, Azərbaycan
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Anti-spam spacer -->
+      <p style="text-align:center; font-size:11px; color:#a0aec0; margin-top:20px;">
+        Bu email {{email}} ünvanına göndərilib. Əgər qeydiyyatdan keçməmisinizsə,
+        bu emaili nəzərə almayın.
+      </p>
+    </div>
+  </body>
+</html>

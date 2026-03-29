@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/common/dtos/createUser.dto';
@@ -60,5 +60,10 @@ export class AuthController {
     logoutall(@CurrentUser() user: JwtPayload, @Res({ passthrough: true }) res: Response) {
         res.clearCookie('refreshToken', { path: '/auth' });
         return this.authService.logoutAll(user.id)
+    }
+
+    @Get('/email-verify')
+    async verifyEmail(@Query('token') token: string) {
+        return this.authService.verifyEmail(token)
     }
 }

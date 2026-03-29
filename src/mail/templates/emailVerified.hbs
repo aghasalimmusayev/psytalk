@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="az">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Email Təsdiqləndi</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f0f4f8;
+        color: #2d3748;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { text-decoration: none; }
+
+      .email-wrapper {
+        width: 100%;
+        background-color: #f0f4f8;
+        padding: 40px 16px;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+        padding: 48px 40px 44px;
+        text-align: center;
+      }
+      .logo-mark {
+        display: inline-block;
+        background: rgba(255,255,255,0.15);
+        border-radius: 14px;
+        padding: 10px 18px;
+        margin-bottom: 28px;
+      }
+      .logo-text {
+        font-size: 22px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 2px;
+      }
+      .logo-dot { color: #a7f3d0; }
+
+      /* Success icon circle */
+      .success-circle {
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+        line-height: 80px;
+        text-align: center;
+      }
+      .header-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.3;
+        margin-bottom: 8px;
+      }
+      .header-subtitle {
+        font-size: 14px;
+        color: rgba(255,255,255,0.80);
+      }
+
+      /* Body */
+      .body-content {
+        padding: 40px 40px 32px;
+      }
+      .greeting {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 14px;
+      }
+      .greeting span { color: #059669; }
+      .intro-text {
+        font-size: 15px;
+        color: #4a5568;
+        line-height: 1.75;
+        margin-bottom: 32px;
+      }
+
+      /* Status card */
+      .status-card {
+        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        border: 1.5px solid #6ee7b7;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .status-icon {
+        font-size: 22px;
+        margin-top: 1px;
+        flex-shrink: 0;
+      }
+      .status-text-block {}
+      .status-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #065f46;
+        margin-bottom: 4px;
+      }
+      .status-desc {
+        font-size: 13px;
+        color: #047857;
+        line-height: 1.6;
+      }
+
+      .divider {
+        height: 1px;
+        background-color: #e2e8f0;
+        margin: 0 0 28px 0;
+      }
+
+      /* Next steps */
+      .section-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #059669;
+        margin-bottom: 16px;
+      }
+      .steps-list {
+        margin-bottom: 32px;
+      }
+      .step-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+      .step-number {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #059669, #0d9488);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        line-height: 28px;
+        flex-shrink: 0;
+      }
+      .step-text {}
+      .step-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 2px;
+      }
+      .step-desc {
+        font-size: 13px;
+        color: #718096;
+        line-height: 1.55;
+      }
+
+      /* CTA */
+      .cta-section {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .cta-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #059669, #0d9488);
+        color: #ffffff !important;
+        font-size: 15px;
+        font-weight: 700;
+        padding: 14px 36px;
+        border-radius: 50px;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 14px rgba(5,150,105,0.35);
+      }
+
+      /* Footer */
+      .footer {
+        background-color: #1e1b4b;
+        padding: 32px 40px;
+        text-align: center;
+      }
+      .footer-logo {
+        font-size: 18px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+      }
+      .footer-tagline {
+        font-size: 12px;
+        color: rgba(255,255,255,0.5);
+        margin-bottom: 18px;
+      }
+      .footer-links { margin-bottom: 16px; }
+      .footer-links a {
+        font-size: 12px;
+        color: rgba(255,255,255,0.6);
+        margin: 0 10px;
+      }
+      .footer-copy {
+        font-size: 11px;
+        color: rgba(255,255,255,0.35);
+        line-height: 1.6;
+      }
+
+      @media (max-width: 480px) {
+        .email-wrapper { padding: 20px 8px; }
+        .header { padding: 36px 24px 32px; }
+        .header-title { font-size: 22px; }
+        .body-content { padding: 28px 24px 24px; }
+        .footer { padding: 24px 20px; }
+        .status-card { flex-direction: column; gap: 8px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="email-wrapper">
+      <div class="email-container">
+
+        <!-- ═══ HEADER ═══ -->
+        <div class="header">
+          <div class="logo-mark">
+            <span class="logo-text">PSY<span class="logo-dot">•</span>TALK</span>
+          </div>
+          <div class="success-circle">✅</div>
+          <h1 class="header-title">Email ünvanınız<br/>təsdiqləndi!</h1>
+          <p class="header-subtitle">Hesabınız tam aktivdir və istifadəyə hazırdır</p>
+        </div>
+
+        <!-- ═══ BODY ═══ -->
+        <div class="body-content">
+
+          <p class="greeting">Təbriklər, <span>{{firstName}}</span>! 🎉</p>
+          <p class="intro-text">
+            Email ünvanınız uğurla doğrulandı. Artıq PSYTALK platformasının
+            bütün imkanlarından tam istifadə edə bilərsiniz.
+          </p>
+
+          <!-- Status card -->
+          <div class="status-card">
+            <div class="status-icon">🔐</div>
+            <div class="status-text-block">
+              <p class="status-title">Hesab statusu: Aktiv</p>
+              <p class="status-desc">
+                Email doğrulaması tamamlandı. Hesabınız tam təhlükəsizlik
+                səviyyəsindədir.
+              </p>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Next steps -->
+          <p class="section-label">Növbəti addımlar</p>
+          <div class="steps-list">
+
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-text">
+                <p class="step-title">Profilinizi tamamlayın</p>
+                <p class="step-desc">Şəkil əlavə edin, doğum tarixinizi və əlaqə
+                  məlumatlarınızı doldurun.</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-text">
+                <p class="step-title">Psixoloq seçin</p>
+                <p class="step-desc">Reytinq sistemi ilə sizə ən uyğun mütəxəssisi
+                  tapın və seans rezerv edin.</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-text">
+                <p class="step-title">İlk seansınız pulsuzdur</p>
+                <p class="step-desc">"İlk seans pulsuz" kampaniyasından yararlanın
+                  və platforma ilə tanış olun.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- CTA -->
+          <div class="cta-section">
+            <a href="{{platformUrl}}" class="cta-button">
+              Platformaya Daxil Ol →
+            </a>
+          </div>
+
+        </div>
+
+        <!-- ═══ FOOTER ═══ -->
+        <div class="footer">
+          <p class="footer-logo">PSY•TALK</p>
+          <p class="footer-tagline">Psixoloji sağlamlıq — hər kəs üçün</p>
+          <div class="footer-links">
+            <a href="{{platformUrl}}/privacy">Məxfilik Siyasəti</a>
+            <a href="{{platformUrl}}/terms">İstifadə Şərtləri</a>
+            <a href="{{platformUrl}}/support">Dəstək</a>
+          </div>
+          <p class="footer-copy">
+            © 2026 PSYTALK MMC. Bütün hüquqlar qorunur.<br/>
+            Bakı, Azərbaycan
+          </p>
+        </div>
+
+      </div>
+
+      <p style="text-align:center; font-size:11px; color:#a0aec0; margin-top:20px;">
+        Bu email sizin tərəfinizdən həyata keçirilən doğrulama əməliyyatına
+        cavab olaraq göndərilib.
+      </p>
+    </div>
+  </body>
+</html>

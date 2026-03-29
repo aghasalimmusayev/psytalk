@@ -6,11 +6,13 @@ import { User } from 'src/common/entities/user.entity';
 import { TokenEntity } from 'src/common/entities/token.entity';
 import { UsersModule } from 'src/users/users.module';
 import { JwtService } from '@nestjs/jwt';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, TokenEntity]),
-    UsersModule
+    UsersModule,
+    MailModule
   ],
   providers: [AuthService, JwtService],
   controllers: [AuthController]
