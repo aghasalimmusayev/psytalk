@@ -1,9 +1,9 @@
-Postgresql-de deyisilesi yerler
+<!--Todo * Postgresql-de deyisilesi yerler -->
    - CommonEntity
    - app.module
    - user.entity
    - token.entity
-
+<!--Todo * EmailVerification - Frontendde nezerden kecirilmelidir -->
 📧 emailVerificationToken
 1. User qeydiyyatdan keçir
 2. Sistem random token yaradır → "abc123xyz"

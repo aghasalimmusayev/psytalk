@@ -1,9 +1,9 @@
 import { Controller, Delete, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiBasicAuth } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
 
-@ApiBasicAuth()
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
     constructor(private userService: UsersService) { }
