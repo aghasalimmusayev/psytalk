@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/common/dtos/createUser.dto';
 import type { Request, Response } from 'express';
@@ -11,6 +11,8 @@ import { AuthResponseDto } from 'src/common/dtos/authResponse.dto';
 import { CurrentUser } from 'src/decorators/currentUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { JwtPayload } from 'src/common/types';
+import { ForgetPassword } from 'src/common/dtos/forgetPassword.dto';
+import { ResetPassword } from 'src/common/dtos/resetPassword.dto';
 
 @ApiBearerAuth()
 @Controller('auth')
@@ -45,6 +47,17 @@ export class AuthController {
             maxAge: ms((process.env.JWT_REFRESH_TIME ?? '7d') as StringValue)
         })
         return { user, accessToken }
+    }
+
+    @Post('/forget-password')
+    async forgetpassword(@Body() body: ForgetPassword) {
+        return this.authService.forgetPassword(body.email)
+    }
+
+    @Post('/reset-password')
+    @ApiQuery({ name: 'token', required: true, type: String })
+    async resetpassword(@Query('token') token: string, @Body() body: ResetPassword) {
+        return this.authService.resetPassword(token, body.newPassword)
     }
 
     @Post('/logout')

@@ -31,4 +31,30 @@ export class MailService {
             }
         })
     }
+
+    async sendResetLink(email: string, firstName: string, token: string) {
+        const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${token}`
+        await this.mailService.sendMail({
+            to: email,
+            subject: '🔐 Şifrə Sıfırlama — PSYTALK',
+            template: './passwordReset',
+            context: {
+                firstName,
+                resetUrl,
+                platformUrl: process.env.CLIENT_URL ?? 'https://psytalk.az'
+            }
+        })
+    }
+
+    async sendPasswordChanged(email: string, firstName: string) {
+        await this.mailService.sendMail({
+            to: email,
+            subject: '🔒 Şifrəniz dəyişdirildi — PSYTALK',
+            template: './passwordChanged',
+            context: {
+                firstName,
+                platformUrl: process.env.CLIENT_URL ?? 'https://psytalk.az'
+            }
+        })
+    }
 }

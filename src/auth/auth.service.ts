@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenEntity } from 'src/common/entities/token.entity';
@@ -102,6 +102,54 @@ export class AuthService {
             { isRevoked: true }
         )
         return { message: 'You have logged out from all devices' }
+    }
+
+    async forgetPassword(email: string) {
+        const user = await this.userService.findByEmail(email)
+        if (!user) throw new NotFoundException('Email not found')
+        await this.tokenRepo.update(
+            { user: { id: user.id }, type: TokenType.PASSWORD_RESET, isRevoked: false },
+            { isRevoked: true }
+        )
+        const plainToken = randomBytes(32).toString('hex')
+        const hashedToken = await bcrypt.hash(plainToken, 10)
+        const expired = new Date(Date.now() + ms('15m' as StringValue))
+        const resetToken = this.tokenRepo.create({
+            jti: plainToken,
+            tokenHash: hashedToken,
+            type: TokenType.PASSWORD_RESET,
+            expiresAt: expired,
+            isRevoked: false,
+            user
+        })
+        await this.tokenRepo.save(resetToken)
+        await this.mailService.sendResetLink(user.email, user.firstName, plainToken)
+        return { message: 'The password reset link has been sent to your email' }
+    }
+
+    async resetPassword(token: string, newPassword: string) {
+        const linkedToken = await this.tokenRepo.findOne({
+            where: { jti: token, type: TokenType.PASSWORD_RESET, isRevoked: false }, relations: ['user']
+        })
+        if (!linkedToken) throw new BadRequestException('Token invalid')
+        if (linkedToken.expiresAt < new Date()) {
+            linkedToken.isRevoked = true
+            await this.tokenRepo.save(linkedToken)
+            throw new BadRequestException('Token expired, please send a new request')
+        }
+        const user = linkedToken.user
+        const isSamePassword = await bcrypt.compare(newPassword, user.password)
+        if (isSamePassword) throw new BadRequestException('You cannot use the old password')
+        linkedToken.isRevoked = true
+        await this.tokenRepo.save(linkedToken)
+        await this.tokenRepo.update(
+            { user: { id: user.id }, type: TokenType.REFRESH, isRevoked: false },
+            { isRevoked: true }
+        )
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+        await this.repo.update(user.id, { password: hashedPassword })
+        await this.mailService.sendPasswordChanged(user.email, user.firstName)
+        return { message: 'Your password has been changed successfully, Please login again' }
     }
 
     async verifyEmail(token: string) {
