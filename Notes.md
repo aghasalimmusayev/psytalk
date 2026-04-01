@@ -42,23 +42,32 @@
       User sadəcə linkə basır, heç bir şey doldurmamalı deyil — səhifə açılan kimi useEffect işə düşür, 
       sorğu atılır, nəticə göstərilir. İstifadəçi baxımından tamamilə avtomatikdir. ✅
 
-🔑 passwordResetToken + passwordResetExpires
-1. User "Şifrəmi unutdum" basır
-2. Sistem random token yaradır → "reset456abc"
-3. Bu token DB-də passwordResetToken-a yazılır
-4. Expire vaxtı yazılır → passwordResetExpires: "15 dəqiqə sonra"
-5. Email-ə link göndərilir:
-   "https://psytalk.az/reset-password?token=reset456abc"
-6. User linkə basıb yeni şifrə yazır
-7. Backend yoxlayır:
-   - DB-dəki token === linkdəki token?
-   - passwordResetExpires < new Date()? (vaxtı keçibmi?)
-8. Hər şey OK → şifrə yenilənir, token silinir
+<!--Todo * Update password by User -->
+<!--Todo * Reset password when say forget password -->
+   🔑 passwordResetToken + passwordResetExpires
+   1. User "Şifrəmi unutdum" basır
+   2. Sistem random token yaradır → "reset456abc"
+   3. Bu token DB-də passwordResetToken-a yazılır
+   4. Expire vaxtı yazılır → passwordResetExpires: "15 dəqiqə sonra"
+   5. Email-ə link göndərilir:
+      "https://psytalk.az/reset-password?token=reset456abc"
+   6. User linkə basıb yeni şifrə yazır
+   7. Backend yoxlayır:
+      - DB-dəki token === linkdəki token?
+      - passwordResetExpires < new Date()? (vaxtı keçibmi?)
+   8. Hər şey OK → şifrə yenilənir, token silinir
+   
+<!--Todo * "ani logout", frontend tərəfindən şifrə dəyişildikdən sonra sadəcə local storage/cookie-dəki access token-i silmək kifayətdir. Backend artıq refresh-i bloklayıb. -->
+<!--Todo * UpdateUser => Which fields can update, it has to be shown for the user`s role in Frontend -->
+
+Commit1
+* PsyTalk project created
 
 Commit2
 * psytalk_db database created
    - auth.module created
    - users.module created
+
 Commit3
 * new methods, services
    - register method created
@@ -67,17 +76,26 @@ Commit3
    - serializer added
    - rateLimit added
    - cleanup.service created
+
 Commit4
 * New methods
    - Sqlite3 integration for development
    - GetAllUsers
    - DeleteUser
    - all routes were tested
+
 Commit5
-New methods and functions
+* New methods and functions
    - AuthGuard
    - RoleGuard
    - CurrentUser decorator
    - Role decorator
+
 Commit6
-MailService
+* MailService
+
+Commit7
+* New methods - Not Tested
+   - UpdateUser
+   - ChangePassword
+   - GetProfile
