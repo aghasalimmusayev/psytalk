@@ -12,7 +12,7 @@ import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
-    // TypeOrmModule.forRoot({ //! sonda Postgresql-e kecilsin
+    // TypeOrmModule.forRoot({ //! production-da Postgresql-e kecilsin
     //   type: 'postgres',
     //   host: 'localhost',
     //   port: 5432,

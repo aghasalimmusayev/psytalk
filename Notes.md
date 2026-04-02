@@ -1,3 +1,8 @@
+<!--Todo * Admin terefinden verifyDiploma yazilmalidir -->
+<!--Todo * Create admin -->
+<!--! Signup-da Role secimi yalnisdi, user ancaq patient ve psychologist sece bilmelidir -->
+<!--! googleId meselesi barede hec bir is gorulmedi -->
+
 <!--Todo * Postgresql-de deyisilesi yerler -->
    - CommonEntity
    - app.module
@@ -44,7 +49,6 @@
 
 <!--Todo * "ani logout", frontend tərəfindən şifrə dəyişildikdən sonra sadəcə local storage/cookie-dəki access token-i silmək kifayətdir. Backend artıq refresh-i bloklayıb. -->
 <!--Todo * UpdateUser => Which fields can update, it has to be shown for the user`s role in Frontend -->
-<!--Todo * Admin terefinden verifyDiploma yazilmalidir -->
 
 Commit1
 * PsyTalk project created
