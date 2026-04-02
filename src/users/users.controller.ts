@@ -14,7 +14,8 @@ import { UpdatePasswordDto } from 'src/common/dtos/updatePassword.dto';
 export class UsersController {
     constructor(private userService: UsersService) { }
 
-    @Post('/all')
+    @Get('/all')
+    @Serialize(UserProfileDto)
     getAllUsers() {
         return this.userService.getAll()
     }

@@ -70,36 +70,35 @@ export class AuthService {
         })
         if (!token) throw new UnauthorizedException('Invalid Token')
         if (token.expiresAt < new Date()) {
-            await this.tokenRepo.update({ jti: payload.jti }, { isRevoked: true })
+            await this.tokenRepo.update({ jti: payload.jti }, { isRevoked: true, updatedAt: new Date() })
             throw new UnauthorizedException('Refresh token expired')
         }
         const isValid = await bcrypt.compare(oldRefreshToken, token.tokenHash)
         if (!isValid) throw new UnauthorizedException('Invalid token')
         const user = token.user
-        await this.tokenRepo.update({ jti: payload.jti }, { isRevoked: true })
+        await this.tokenRepo.update({ jti: payload.jti }, { isRevoked: true, updatedAt: new Date() })
         const { accessToken, refreshToken } = await this.generateTokens(user)
         return { accessToken, refreshToken }
     }
 
     async logout(refreshToken: string) {
+        if (!refreshToken) throw new UnauthorizedException('Token is missing')
         let payload: any
         try {
             payload = await this.jwt.verifyAsync(refreshToken, { secret: process.env.JWT_REFRESH_SECRET })
         } catch (err) {
             throw new UnauthorizedException('Invalid refresh token');
         }
-        const result = await this.tokenRepo.update(
-            { jti: payload.jti, isRevoked: false },
-            { isRevoked: true }
-        )
-        if (result.affected === 0) throw new UnauthorizedException('Invalid or alreay revoked token')
+        const token = await this.tokenRepo.findOne({ where: { jti: payload.jti } })
+        if (!token) throw new NotFoundException('Token not found')
+        await this.tokenRepo.update({ jti: payload.jti, isRevoked: false }, { isRevoked: true, updatedAt: new Date() })
         return { message: 'You have logged out' }
     }
 
     async logoutAll(userId: number) {
         await this.tokenRepo.update(
             { user: { id: userId }, isRevoked: false },
-            { isRevoked: true }
+            { isRevoked: true, updatedAt: new Date() }
         )
         return { message: 'You have logged out from all devices' }
     }
@@ -109,7 +108,7 @@ export class AuthService {
         if (!user) throw new NotFoundException('Email not found')
         await this.tokenRepo.update(
             { user: { id: user.id }, type: TokenType.PASSWORD_RESET, isRevoked: false },
-            { isRevoked: true }
+            { isRevoked: true, updatedAt: new Date() }
         )
         const plainToken = randomBytes(32).toString('hex')
         const hashedToken = await bcrypt.hash(plainToken, 10)
@@ -144,10 +143,10 @@ export class AuthService {
         await this.tokenRepo.save(linkedToken)
         await this.tokenRepo.update(
             { user: { id: user.id }, type: TokenType.REFRESH, isRevoked: false },
-            { isRevoked: true }
+            { isRevoked: true, updatedAt: new Date() }
         )
         const hashedPassword = await bcrypt.hash(newPassword, 10)
-        await this.repo.update(user.id, { password: hashedPassword })
+        await this.repo.update(user.id, { password: hashedPassword, updatedAt: new Date() })
         await this.mailService.sendPasswordChanged(user.email, user.firstName)
         return { message: 'Your password has been changed successfully, Please login again' }
     }

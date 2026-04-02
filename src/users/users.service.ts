@@ -31,7 +31,7 @@ export class UsersService {
         if (id !== currentUserId) throw new ForbiddenException('You can only update your own profile')
         const user = await this.repo.findOne({ where: { id } })
         if (!user) throw new NotFoundException('User not found')
-        const result = await this.repo.update(user.id, { ...data })
+        const result = await this.repo.update(user.id, { ...data, updatedAt: new Date() })
         if (result.affected === 0) throw new NotFoundException('User not found')
         return await this.repo.findOne({ where: { id: user.id } })
     }
@@ -46,11 +46,12 @@ export class UsersService {
         if (checkNewPassword) throw new ForbiddenException('You can not use the same password')
         await this.tokenRepo.update(
             { user: { id: user.id }, isRevoked: false },
-            { isRevoked: true }
+            { isRevoked: true, updatedAt: new Date() }
         )
         const hashed = await bcrypt.hash(password, 10)
-        const result = await this.repo.update(user.id, { password: hashed })
+        const result = await this.repo.update(user.id, { password: hashed, updatedAt: new Date() })
         if (result.affected === 0) throw new NotFoundException('User not found')
+        // await mailServie
         return { message: 'Your password has been updated' }
     }
 

@@ -76,6 +76,7 @@ export class AuthController {
     }
 
     @Get('/email-verify')
+    @ApiQuery({ name: 'token', required: true, type: String })
     async verifyEmail(@Query('token') token: string) {
         return this.authService.verifyEmail(token)
     }

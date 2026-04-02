@@ -1,4 +1,4 @@
-import { BaseEntity, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity()
 export class CommonEntity extends BaseEntity {
@@ -10,6 +10,6 @@ export class CommonEntity extends BaseEntity {
     createdAt: Date
 
     //! @UpdateDateColumn({ type: 'timestamp', default: null })
-    @UpdateDateColumn({ type: 'datetime', default: null })
+    @Column({ type: 'datetime', nullable: true, default: null })
     updatedAt: Date
 }
