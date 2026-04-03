@@ -18,4 +18,7 @@ export class UserDto {
 
     @Expose()
     phone: string
+
+    @Expose()
+    bio: string
 }

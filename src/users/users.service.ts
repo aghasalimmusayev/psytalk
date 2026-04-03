@@ -55,9 +55,11 @@ export class UsersService {
         return { message: 'Your password has been updated' }
     }
 
-    async delete(id: number) {
+    async delete(id: number, currentUserId: number) {
         const user = await this.repo.findOne({ where: { id } })
         if (!user) throw new NotFoundException('User not found')
+        if (user.role === 'center' || user.role === 'admin') throw new ForbiddenException('You have no acces')
+        if (id !== currentUserId) throw new ForbiddenException('You can only delete your own account')
         await this.repo.remove(user)
         return { message: 'User has been removed' }
     }

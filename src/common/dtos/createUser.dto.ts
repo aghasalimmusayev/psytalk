@@ -21,10 +21,12 @@ export class CreateUserDto {
     @IsOptional()
     lastName?: string
 
-    @ApiProperty()
-    @IsEnum(UserRole)
+    @ApiProperty({ enum: [UserRole.PATIENT, UserRole.PSYCHOLOGIST] })
+    @IsEnum([UserRole.PATIENT, UserRole.PSYCHOLOGIST], {
+        message: 'Role yalnız patient və ya psychologist ola bilər'
+    })
     role: UserRole
-
+    
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()

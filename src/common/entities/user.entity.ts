@@ -44,9 +44,6 @@ export class User extends CommonEntity {
     @Column({ default: false })
     isEmailVerified: boolean;
 
-    @Column({ default: false })
-    isVerified: boolean;                 // Admin tərəfindən (psixoloq/mərkəz üçün)
-
     @Column({ default: true })
     isActive: boolean;
 

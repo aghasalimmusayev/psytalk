@@ -13,6 +13,9 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { JwtPayload } from 'src/common/types';
 import { ForgetPassword } from 'src/common/dtos/forgetPassword.dto';
 import { ResetPassword } from 'src/common/dtos/resetPassword.dto';
+import { RoleGuard } from 'src/guards/role.guard';
+import { CreateCenterDto } from 'src/common/dtos/registerCenter.dto';
+import { Roles } from 'src/decorators/role.decorator';
 
 @ApiBearerAuth()
 @Controller('auth')
@@ -52,6 +55,22 @@ export class AuthController {
     @Post('/forget-password')
     async forgetpassword(@Body() body: ForgetPassword) {
         return this.authService.forgetPassword(body.email)
+    }
+
+    @Post('/center')
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles('admin')
+    @Serialize(AuthResponseDto)
+    async resitercenter(@Body() body: CreateCenterDto, @Res({ passthrough: true }) res: Response) {
+        const { user, accessToken, refreshToken } = await this.authService.createCenter(body)
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/auth',
+            maxAge: ms((process.env.JWT_REFRESH_TIME ?? '7d') as StringValue)
+        })
+        return { user, accessToken }
     }
 
     @Post('/reset-password')

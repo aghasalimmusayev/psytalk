@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guards/auth.guard';
@@ -8,6 +8,7 @@ import { UpdateUserDto } from 'src/common/dtos/updateUser.dto';
 import { Serialize } from 'src/interceptors/serielize.interceptor';
 import { UserProfileDto } from 'src/common/dtos/userProfile.dto';
 import { UpdatePasswordDto } from 'src/common/dtos/updatePassword.dto';
+import { Response } from 'express';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -35,8 +36,9 @@ export class UsersController {
 
     @Delete('/:id')
     @UseGuards(AuthGuard)
-    removeUser(@Param('id', ParseIntPipe) id: number) {
-        return this.userService.delete(id)
+    removeUser(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload, @Res({ passthrough: true }) res: Response) {
+        res.clearCookie('refreshToken', { path: '/auth' });
+        return this.userService.delete(id, user.id)
     }
 
     @Get('/profile')

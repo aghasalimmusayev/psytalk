@@ -1,8 +1,8 @@
 export enum UserRole {
   PATIENT = 'patient',
   PSYCHOLOGIST = 'psychologist',
-  CENTER = 'center',
-  ADMIN = 'admin'
+  ADMIN = 'admin',
+  CENTER = 'center'
 }
 
 export enum AuthProvider {

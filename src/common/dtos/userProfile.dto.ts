@@ -12,7 +12,6 @@ export class UserProfileDto {
     @Expose() gender: string
     @Expose() avatarUrl: string
     @Expose() isEmailVerified: boolean
-    @Expose() isVerified: boolean
     @Expose() isActive: boolean
     @Expose() walletBalance: number
     @Expose() createdAt: Date

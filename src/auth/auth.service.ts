@@ -4,15 +4,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TokenEntity } from 'src/common/entities/token.entity';
 import { User } from 'src/common/entities/user.entity';
 import { generateAccessToken, generateRefreshToken, } from 'src/common/jwtToken';
-import { Any, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { CreateUserDto } from 'src/common/dtos/createUser.dto';
 import { LoginDto } from 'src/common/dtos/login.dto';
 import { UsersService } from 'src/users/users.service';
 import ms, { StringValue } from 'ms'
-import { TokenType } from 'src/common/types';
+import { TokenType, UserRole } from 'src/common/types';
 import { MailService } from 'src/mail/mail.service';
 import { randomBytes } from 'crypto';
+import { CreateCenterDto } from 'src/common/dtos/registerCenter.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,31 @@ export class AuthService {
         if (exists) throw new BadRequestException('This email already exists')
         const hashedPassword = await bcrypt.hash(data.password, 10)
         const user = this.repo.create({ ...data, password: hashedPassword })
+        await this.repo.save(user)
+
+        const plainToken = randomBytes(32).toString('hex')
+        const hashedToken = await bcrypt.hash(plainToken, 10)
+        const expires = new Date(Date.now() + ms('24h' as StringValue))
+        const verifyToken = this.tokenRepo.create({
+            jti: plainToken,
+            tokenHash: hashedToken,
+            type: TokenType.EMAIL_VERIFY,
+            expiresAt: expires,
+            isRevoked: false,
+            user
+        })
+        await this.tokenRepo.save(verifyToken)
+
+        const { accessToken, refreshToken } = await this.generateTokens(user)
+        await this.mailService.sendWelcome(user.email, user.firstName, plainToken)
+        return { user, accessToken, refreshToken }
+    }
+
+    async createCenter(data: CreateCenterDto) {
+        const exists = await this.repo.findOne({ where: { email: data.email } })
+        if (exists) throw new BadRequestException('This email already exists')
+        const hashedPassword = await bcrypt.hash(data.password, 10)
+        const user = this.repo.create({ ...data, password: hashedPassword, role: UserRole.CENTER })
         await this.repo.save(user)
 
         const plainToken = randomBytes(32).toString('hex')

@@ -1,6 +1,6 @@
 <!--Todo * Admin terefinden verifyDiploma yazilmalidir -->
-<!--Todo * Create admin -->
-<!--! Signup-da Role secimi yalnisdi, user ancaq patient ve psychologist sece bilmelidir -->
+<!--Todo * Admin terefinden isActived yazilmalidir -->
+<!--Todo * Admin butun user-leri sile bilsin -->
 <!--! googleId meselesi barede hec bir is gorulmedi -->
 
 <!--Todo * Postgresql-de deyisilesi yerler -->
@@ -95,3 +95,9 @@ Commit8
 
 Commit9
 * All routes tested
+
+Commit10
+* New methods & file
+   - CreateCenter
+   - seed.ts => admin.create
+   - Checking CurrentUser in deleting user
