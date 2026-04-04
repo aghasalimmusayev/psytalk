@@ -1,9 +1,5 @@
-<!--Todo * Admin terefinden verifyDiploma yazilmalidir -->
-<!--Todo * Admin terefinden isActived yazilmalidir -->
-<!--Todo * Admin butun user-leri sile bilsin -->
-<!--! googleId meselesi barede hec bir is gorulmedi -->
-
-<!--Todo * Postgresql-de deyisilesi yerler -->
+<!--Todo * googleId meselesi barede hec bir is gorulmedi -->
+<!--Todo * Postgresql-e kecilse, deyisilesi yerler -->
    - CommonEntity
    - app.module
    - user.entity
@@ -46,9 +42,6 @@
          }, [])
       User sadəcə linkə basır, heç bir şey doldurmamalı deyil — səhifə açılan kimi useEffect işə düşür, 
       sorğu atılır, nəticə göstərilir. İstifadəçi baxımından tamamilə avtomatikdir. ✅
-
-<!--Todo * "ani logout", frontend tərəfindən şifrə dəyişildikdən sonra sadəcə local storage/cookie-dəki access token-i silmək kifayətdir. Backend artıq refresh-i bloklayıb. -->
-<!--Todo * UpdateUser => Which fields can update, it has to be shown for the user`s role in Frontend -->
 
 Commit1
 * PsyTalk project created
@@ -101,3 +94,7 @@ Commit10
    - CreateCenter
    - seed.ts => admin.create
    - Checking CurrentUser in deleting user
+
+Commit11
+   - VerifyUserByAdmin
+   - README.md updated

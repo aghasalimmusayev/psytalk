@@ -9,6 +9,9 @@ import { Serialize } from 'src/interceptors/serielize.interceptor';
 import { UserProfileDto } from 'src/common/dtos/userProfile.dto';
 import { UpdatePasswordDto } from 'src/common/dtos/updatePassword.dto';
 import { Response } from 'express';
+import { RoleGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/decorators/role.decorator';
+import { AdminVerifyDto } from 'src/common/dtos/adminVerify.dto';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -21,6 +24,19 @@ export class UsersController {
         return this.userService.getAll()
     }
 
+    @Patch('/change-password/:id')
+    @UseGuards(AuthGuard)
+    updatePassword(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload, @Body() body: UpdatePasswordDto) {
+        return this.userService.changePassword(id, user.id, body.oldPassword, body.newPassword)
+    }
+
+    @Patch('/admin-verify/:id')
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles('admin')
+    verifyuser(@Param('id', ParseIntPipe) id: number) {
+        return this.userService.verifyUser(id)
+    }
+
     @Patch('/:id') // Which fields can update, it has to be shown for the user`s role in Frontend
     @UseGuards(AuthGuard)
     @Serialize(UserProfileDto)
@@ -28,10 +44,11 @@ export class UsersController {
         return this.userService.update(id, body, user.id)
     }
 
-    @Patch('/change-password/:id')
-    @UseGuards(AuthGuard)
-    updatePassword(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload, @Body() body: UpdatePasswordDto) {
-        return this.userService.changePassword(id, user.id, body.oldPassword, body.newPassword)
+    @Delete('/admin/:id')
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles('admin')
+    deletebyadmin(@Param('id', ParseIntPipe) id: number) {
+        return this.userService.deleteByAdmin(id)
     }
 
     @Delete('/:id')

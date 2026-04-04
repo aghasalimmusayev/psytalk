@@ -71,9 +71,6 @@ export class User extends CommonEntity {
     @Column({ nullable: true })
     diplomaUrl: string;                 // Diplom yoxlanışı
 
-    @Column({ default: false })
-    isDiplomaVerified: boolean;
-
     @Column({ type: 'decimal', nullable: true })
     sessionPrice: number;
 

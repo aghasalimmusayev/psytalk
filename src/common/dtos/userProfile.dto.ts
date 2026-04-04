@@ -21,5 +21,4 @@ export class UserProfileDto {
     @Expose() sessionPrice: number
     @Expose() experience: number
     @Expose() diplomaUrl: string
-    @Expose() isDiplomaVerified: boolean
 }

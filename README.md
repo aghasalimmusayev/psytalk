@@ -35,8 +35,8 @@
 |-----|----------|
 | `patient` | Platforma istifadəçisi — psixoloq seçib seans keçirən şəxs |
 | `psychologist` | Fərdi psixoloq — qeydiyyatdan keçir, diplom yükləyir, admin təsdiqini gözləyir |
-| `center` | Psixoloji mərkəz profili |
-| `admin` | Platforma administratoru — psixoloqları təsdiqləyir |
+| `center` | Psixoloji mərkəz — yalnız admin tərəfindən yaradılır |
+| `admin` | Platforma administratoru — yalnız `seed.ts` vasitəsilə yaradılır |
 
 ---
 
@@ -66,6 +66,7 @@
 src/
 ├── app.module.ts              # Əsas modul — bütün modulları birləşdirir
 ├── main.ts                    # Tətbiqin giriş nöqtəsi
+├── seed.ts                    # Admin yaratmaq üçün bir dəfəlik script
 │
 ├── auth/                      # Autentifikasiya modulu
 │   ├── auth.controller.ts     # Register, login, logout, token yenilənmə
@@ -80,6 +81,7 @@ src/
 │   └── templates/             # Handlebars email şablonları
 │       ├── welcome.hbs
 │       ├── emailVerified.hbs
+│       ├── accountActivated.hbs
 │       ├── passwordReset.hbs
 │       └── passwordChanged.hbs
 │
@@ -94,7 +96,8 @@ src/
 │   │   ├── user.entity.ts     # İstifadəçi cədvəli
 │   │   └── token.entity.ts    # Token cədvəli
 │   └── dtos/
-│       ├── createUser.dto.ts
+│       ├── createUser.dto.ts        # Patient / Psychologist qeydiyyatı
+│       ├── registerCenter.dto.ts    # Mərkəz qeydiyyatı (admin only)
 │       ├── login.dto.ts
 │       ├── updateUser.dto.ts
 │       ├── updatePassword.dto.ts
@@ -140,13 +143,19 @@ cp .env.example .env
 # Dəyərləri doldurun (aşağıya baxın)
 ```
 
-### 4. Development rejimini başladın
+### 4. Admin yaradın (ilk dəfə)
+
+```bash
+npm run seed
+```
+
+### 5. Development rejimini başladın
 
 ```bash
 npm run start:dev
 ```
 
-### 5. Swagger UI-a daxil olun
+### 6. Swagger UI-a daxil olun
 
 ```
 http://localhost:4014/api
@@ -190,9 +199,10 @@ MAIL_FROM=noreply@psytalk.az
 
 | Metod | Endpoint | Açıqlama | Qorunur? |
 |-------|----------|----------|----------|
-| `POST` | `/auth/rergister` | Qeydiyyat + email doğrulama linki | ❌ |
+| `POST` | `/auth/rergister` | Patient/Psychologist qeydiyyatı + email doğrulama linki | ❌ |
 | `POST` | `/auth/login` | Giriş — access + refresh token | ❌ |
-| `GET` | `/auth/email-verify?token=` | Email doğrulama | ❌ |
+| `POST` | `/auth/center` | Mərkəz qeydiyyatı | ✅ Admin only |
+| `GET`  | `/auth/email-verify?token=` | Email doğrulama | ❌ |
 | `POST` | `/auth/forget-password` | Şifrə sıfırlama linki göndər | ❌ |
 | `POST` | `/auth/reset-password?token=` | Yeni şifrə təyin et | ❌ |
 | `POST` | `/auth/logout` | Çıxış — refresh token ləğv et | ✅ |
@@ -204,18 +214,41 @@ MAIL_FROM=noreply@psytalk.az
 |-------|----------|----------|----------|
 | `GET` | `/users/all` | Bütün istifadəçiləri gətir | ❌ |
 | `GET` | `/users/profile` | Cari istifadəçinin profili | ✅ |
-| `PATCH` | `/users/:id` | Profil yeniləmə | ✅ |
-| `PATCH` | `/users/change-password/:id` | Şifrə dəyişmə | ✅ |
-| `DELETE` | `/users/:id` | İstifadəçi sil | ✅ |
+| `PATCH` | `/users/:id` | Profil yeniləmə (yalnız öz profili) | ✅ |
+| `PATCH` | `/users/change-password/:id` | Şifrə dəyişmə (yalnız öz profili) | ✅ |
+| `DELETE` | `/users/:id` | İstifadəçi sil (yalnız öz profili) | ✅ |
+| `PATCH` | `/users/admin-verify/:id` | Psixoloqu aktivləşdir (`isActive: true`) | ✅ Admin only |
 
 ---
 
 ## 🔑 Auth Sistemi
 
-### Qeydiyyat axını
+### Patient / Psychologist qeydiyyat axını
 
 ```
 POST /auth/rergister
+  ↓
+Şifrə hash-lanır (bcrypt)
+  ↓
+User DB-yə yazılır
+  ↓
+EMAIL_VERIFY token yaranır → TokenEntity-ə yazılır
+  ↓
+Welcome email göndərilir (doğrulama linki ilə)
+  ↓
+Refresh token → httpOnly cookie-yə yazılır
+Access token → response body-sində qaytarılır
+```
+
+### Mərkəz qeydiyyat axını (Admin only)
+
+```
+POST /auth/center
+  ↓
+AuthGuard: JWT access token yoxlanılır
+RoleGuard: user.role === 'admin' yoxlanılır
+  ↓
+role backend-də 'center' olaraq təyin edilir (DTO-dan gəlmir)
   ↓
 Şifrə hash-lanır (bcrypt)
   ↓
@@ -255,6 +288,23 @@ POST /auth/reset-password?token=xxx
                             →  Şifrə yenilənir
                             →  Bütün REFRESH tokenlar ləğv edilir
                             →  "Şifrə dəyişdirildi" email göndərilir
+```
+
+### Psixoloq aktivləşmə axını (Admin only)
+
+```
+PATCH /users/admin-verify/:id
+  ↓
+AuthGuard: JWT access token yoxlanılır
+RoleGuard: user.role === 'admin' yoxlanılır
+  ↓
+user.role === 'psychologist' yoxlanılır
+  ↓
+isActive: true → DB-yə yazılır
+  ↓
+accountActivated email göndərilir
+  ↓
+{ message: 'Your account has been activated' }
 ```
 
 ---
@@ -300,6 +350,7 @@ enum TokenType {
 |----------|-------------|--------|
 | `sendWelcome()` | Qeydiyyat | `welcome.hbs` |
 | `sendEmailVerified()` | Email doğrulandıqda | `emailVerified.hbs` |
+| `sendAccountActivated()` | Account aktivlədirilməsi doğrulandıqda | `accountActivated.hbs` |
 | `sendResetLink()` | Şifrə sıfırlama sorğusu | `passwordReset.hbs` |
 | `sendPasswordChanged()` | Şifrə dəyişdirildikdə | `passwordChanged.hbs` |
 
@@ -346,13 +397,13 @@ getProfile(@CurrentUser() user: JwtPayload) { ... }
 
 ### RoleGuard
 
-`@Roles()` dekoratoru ilə müəyyən rol tələb edən endpointlər üçün istifadə olunur.
+`@Roles()` dekoratoru ilə müəyyən rol tələb edən endpointlər üçün istifadə olunur. Mütləq `AuthGuard`-dan sonra gəlməlidir.
 
 ```typescript
 @UseGuards(AuthGuard, RoleGuard)
 @Roles('admin')
-@Get('/admin-panel')
-adminPanel() { ... }
+@Post('/center')
+registerCenter() { ... }
 ```
 
 ### CurrentUser Dekoratoru
@@ -386,6 +437,14 @@ SQLite development üçün seçilmişdir çünki:
 
 ### Production (PostgreSQL)
 
+PostgreSQL-ə keçməli olsan, dəyişdirilməli fayllar:
+
+- `common.entity.ts` — `datetime` → `timestamp`
+- `user.entity.ts` — `varchar` → `enum`
+- `token.entity.ts` — `varchar` → `enum`
+- `app.module.ts` — SQLite → PostgreSQL konfigurasiyas
+
+
 `app.module.ts`-də şərh edilmiş bloku aktiv edin:
 
 ```typescript
@@ -400,13 +459,6 @@ TypeOrmModule.forRoot({
   synchronize: false, // Production-da MÜTLƏQ false olmalıdır
 })
 ```
-
-PostgreSQL-ə keçiddə dəyişdirilməli fayllar:
-
-- `common.entity.ts` — `datetime` → `timestamp`
-- `user.entity.ts` — `varchar` → `enum`
-- `token.entity.ts` — `varchar` → `enum`
-- `app.module.ts` — SQLite → PostgreSQL konfigurasiyas
 
 ---
 
@@ -435,7 +487,38 @@ enum UserRole {
 }
 ```
 
-**Qeyd:** Rol əsaslı sahə filtrasiyası **frontend tərəfindən** həyata keçirilir. Backend tək `UpdateUserDto` qəbul edir, rol yoxlaması etmir. Məsələn, psixoloq üçün `diplomaUrl` sahəsi yalnız frontend-də göstərilir.
+**Qeydiyyat zamanı rol məhdudiyyətləri:**
+
+| Endpoint | İcazəli rollar | Necə təyin olunur? |
+|----------|---------------|-------------------|
+| `POST /auth/rergister` | `patient`, `psychologist` | DTO-dan gəlir, `@IsEnum` ilə məhdudlaşdırılıb |
+| `POST /auth/center` | `center` | Backend-də hardcode edilir, DTO-dan gəlmir |
+| `seed.ts` | `admin` | Script vasitəsilə birbaşa DB-yə yazılır |
+
+**Qeyd:** Rol əsaslı sahə filtrasiyası **frontend tərəfindən** həyata keçirilir. Backend tək `UpdateUserDto` qəbul edir. Məsələn, psixoloq üçün `diplomaUrl` sahəsi yalnız frontend-də göstərilir.
+
+---
+
+## 🌱 Admin Seed
+
+Admin hesabı heç bir HTTP endpoint vasitəsilə yaradıla bilməz. Yalnız `seed.ts` scripti ilə yaradılır. Bu script serverdə fiziki/SSH girişi olan şəxs tərəfindən run edilir.
+
+```bash
+npm run seed
+```
+
+Script artıq admin mövcuddursa ikinci dəfə yaratmır:
+
+```
+Admin artıq mövcuddur   # əgər varsa
+Admin uğurla yaradıldı ✅  # əgər yoxdursa
+```
+
+`package.json`-da script:
+
+```json
+"seed": "ts-node -r tsconfig-paths/register src/seed.ts"
+```
 
 ---
 
@@ -459,9 +542,15 @@ Qorunan endpointləri test etmək üçün:
 ### Növbəti addımlar
 
 - [ ] SQLite → PostgreSQL miqrasiyası (schema sabitləşdikdən sonra)
-- [ ] Admin endpointləri — psixoloq diplom təsdiqləmə (`isDiplomaVerified`, `isActive`)
 - [ ] Real domain alınması — `CLIENT_URL` placeholder əvəzinə
 - [ ] Frontend — rol əsaslı şərti rendering (psixoloq/pasiyent profil səhifəsi)
+
+---
+
+### Frontend-də nəzərə alınmalıdır
+
+- "ani logout", frontend tərəfindən şifrə dəyişildikdən sonra sadəcə local storage/cookie-dəki access token silinməlidir. Backend artıq refresh-i bloklayıb.
+- İstifadəçi profilində dəyişiklik edərkən Frontend tərəfindən istifadəçi rolu nəzə alınıb, lazım olan bolmələr göstərilməlidir
 
 ---
 

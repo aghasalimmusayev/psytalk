@@ -5,12 +5,15 @@ import { User } from 'src/common/entities/user.entity';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt'
 import { TokenEntity } from 'src/common/entities/token.entity';
+import { UserRole } from 'src/common/types';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(User) private repo: Repository<User>,
-        @InjectRepository(TokenEntity) private tokenRepo: Repository<TokenEntity>
+        @InjectRepository(TokenEntity) private tokenRepo: Repository<TokenEntity>,
+        private mailService: MailService
     ) { }
 
     async getAll() {
@@ -51,7 +54,7 @@ export class UsersService {
         const hashed = await bcrypt.hash(password, 10)
         const result = await this.repo.update(user.id, { password: hashed, updatedAt: new Date() })
         if (result.affected === 0) throw new NotFoundException('User not found')
-        // await mailServie
+        await this.mailService.sendPasswordChanged(user.email, user.firstName)
         return { message: 'Your password has been updated' }
     }
 
@@ -62,5 +65,23 @@ export class UsersService {
         if (id !== currentUserId) throw new ForbiddenException('You can only delete your own account')
         await this.repo.remove(user)
         return { message: 'User has been removed' }
+    }
+
+    async deleteByAdmin(id: number) {
+        const user = await this.repo.findOne({ where: { id } })
+        if (!user) throw new NotFoundException('User not found')
+        await this.repo.remove(user)
+        return { message: 'The user has been removed' }
+    }
+
+    async verifyUser(userId: number) {
+        const user = await this.repo.findOne({ where: { id: userId } })
+        if (!user) throw new NotFoundException('User not found')
+        if (user.role !== UserRole.PSYCHOLOGIST) {
+            throw new ForbiddenException('Only psychologist accounts can be verified')
+        }
+        await this.repo.update(user.id, { isActive: true, updatedAt: new Date() })
+        await this.mailService.sendAccountActivated(user.email, user.firstName)
+        return { message: 'Your account has been activated' }
     }
 }

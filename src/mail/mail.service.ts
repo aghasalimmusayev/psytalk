@@ -57,4 +57,16 @@ export class MailService {
             }
         })
     }
+
+    async sendAccountActivated(email: string, firstName: string) {
+        await this.mailService.sendMail({
+            to: email,
+            subject: '✅ Hesabınız təsdiq olundu — PSYTALK',
+            template: './accountActivated',
+            context: {
+                firstName,
+                platformUrl: process.env.CLIENT_URL ?? 'https://psytalk.az'
+            }
+        })
+    }
 }
