@@ -11,7 +11,6 @@ import { UpdatePasswordDto } from 'src/common/dtos/updatePassword.dto';
 import { Response } from 'express';
 import { RoleGuard } from 'src/guards/role.guard';
 import { Roles } from 'src/decorators/role.decorator';
-import { AdminVerifyDto } from 'src/common/dtos/adminVerify.dto';
 
 @ApiBearerAuth()
 @Controller('users')
