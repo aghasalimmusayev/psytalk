@@ -16,6 +16,7 @@ import { ResetPassword } from 'src/common/dtos/resetPassword.dto';
 import { RoleGuard } from 'src/guards/role.guard';
 import { CreateCenterDto } from 'src/common/dtos/registerCenter.dto';
 import { Roles } from 'src/decorators/role.decorator';
+import { CreatePsychologistDto } from 'src/common/dtos/createPsychologist.dto';
 
 @ApiBearerAuth()
 @Controller('auth')
@@ -35,6 +36,14 @@ export class AuthController {
             maxAge: ms((process.env.JWT_REFRESH_TIME ?? '7d') as StringValue)
         })
         return { user, accessToken }
+    }
+
+    @Throttle({ default: { ttl: 60000, limit: 3 } })
+    @Post('/psychologist')
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles('admin')
+    async registerPsychologist(@Body() body: CreatePsychologistDto) {
+        return this.authService.createpsychologist(body)
     }
 
     @Throttle({ default: { ttl: 60000, limit: 5 } })
@@ -60,17 +69,8 @@ export class AuthController {
     @Post('/center')
     @UseGuards(AuthGuard, RoleGuard)
     @Roles('admin')
-    @Serialize(AuthResponseDto)
-    async resitercenter(@Body() body: CreateCenterDto, @Res({ passthrough: true }) res: Response) {
-        const { user, accessToken, refreshToken } = await this.authService.createCenter(body)
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            path: '/auth',
-            maxAge: ms((process.env.JWT_REFRESH_TIME ?? '7d') as StringValue)
-        })
-        return { user, accessToken }
+    async resitercenter(@Body() body: CreateCenterDto) {
+        return this.authService.createCenter(body)
     }
 
     @Post('/reset-password')

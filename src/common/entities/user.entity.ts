@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany } from "typeorm";
-import { AuthProvider, UserRole } from "../types";
+import { AuthProvider, Gender, UserRole } from "../types";
 import { CommonEntity } from "./common.entity";
+import { DocumentEntity } from "./document.entity";
 import { TokenEntity } from "./token.entity";
 
 @Entity('users')
@@ -32,8 +33,8 @@ export class User extends CommonEntity {
     dateOfBirth: Date;
 
     //! @Column({ nullable: true, type: 'enum', enum: ['male', 'female'] })
-    @Column({ type: 'text', nullable: true })
-    gender: 'male' | 'female';
+    @Column({ type: 'varchar' })
+    gender: Gender;
 
     @Column({ nullable: true })
     avatarUrl: string;
@@ -68,8 +69,8 @@ export class User extends CommonEntity {
     @Column('simple-array', { nullable: true })
     specializations: string[];          // Anxiety, Depression, Family...
 
-    @Column({ nullable: true })
-    diplomaUrl: string;                 // Diplom yoxlanışı
+    @OneToMany(() => DocumentEntity, (doc) => doc.user)
+    documents: DocumentEntity[];
 
     @Column({ type: 'decimal', nullable: true })
     sessionPrice: number;

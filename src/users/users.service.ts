@@ -20,6 +20,10 @@ export class UsersService {
         return this.repo.find()
     }
 
+    async getPsychologists() {
+        return this.repo.find({ where: { role: UserRole.PSYCHOLOGIST } })
+    }
+
     async findByEmail(email: string) {
         return await this.repo.findOne({ where: { email } })
     }

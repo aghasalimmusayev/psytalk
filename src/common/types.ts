@@ -22,3 +22,20 @@ export type JwtPayload = {
   firstName: string,
   role: UserRole
 }
+
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE"
+}
+
+export enum DocumentType {
+  DIPLOMA = 'diploma',
+  CERTIFICATE = 'certificate',
+  LICENSE = 'license',
+}
+
+export enum DocumentStatus {
+  PENDING = 'pending',
+  VERIFIED = 'verified',
+  REJECTED = 'rejected',
+}

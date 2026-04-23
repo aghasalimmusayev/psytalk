@@ -14,6 +14,7 @@ import { TokenType, UserRole } from 'src/common/types';
 import { MailService } from 'src/mail/mail.service';
 import { randomBytes } from 'crypto';
 import { CreateCenterDto } from 'src/common/dtos/registerCenter.dto';
+import { CreatePsychologistDto } from 'src/common/dtos/createPsychologist.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,9 +30,8 @@ export class AuthService {
         const exists = await this.repo.findOne({ where: { email: data.email } })
         if (exists) throw new BadRequestException('This email already exists')
         const hashedPassword = await bcrypt.hash(data.password, 10)
-        const user = this.repo.create({ ...data, password: hashedPassword })
+        const user = this.repo.create({ ...data, password: hashedPassword, role: UserRole.PATIENT })
         await this.repo.save(user)
-
         const plainToken = randomBytes(32).toString('hex')
         const hashedToken = await bcrypt.hash(plainToken, 10)
         const expires = new Date(Date.now() + ms('24h' as StringValue))
@@ -44,10 +44,36 @@ export class AuthService {
             user
         })
         await this.tokenRepo.save(verifyToken)
-
         const { accessToken, refreshToken } = await this.generateTokens(user)
         await this.mailService.sendWelcome(user.email, user.firstName, plainToken)
         return { user, accessToken, refreshToken }
+    }
+
+    async createpsychologist(data: CreatePsychologistDto) {
+        const exists = await this.repo.findOne({ where: { email: data.email } })
+        if (exists) throw new BadRequestException('This email already exists')
+        const hashedPassword = await bcrypt.hash(data.password, 10)
+        const user = this.repo.create({
+            ...data,
+            password: hashedPassword,
+            role: UserRole.PSYCHOLOGIST,
+            isActive: false
+        })
+        await this.repo.save(user)
+        const plainToken = randomBytes(32).toString('hex')
+        const hashedToken = await bcrypt.hash(plainToken, 10)
+        const expires = new Date(Date.now() + ms('24h' as StringValue))
+        const verifyToken = this.tokenRepo.create({
+            jti: plainToken,
+            tokenHash: hashedToken,
+            type: TokenType.EMAIL_VERIFY,
+            expiresAt: expires,
+            isRevoked: false,
+            user
+        })
+        await this.tokenRepo.save(verifyToken)
+        await this.mailService.welcomePsychologist(user.email, user.firstName, plainToken)
+        return { user }
     }
 
     async createCenter(data: CreateCenterDto) {
@@ -56,7 +82,6 @@ export class AuthService {
         const hashedPassword = await bcrypt.hash(data.password, 10)
         const user = this.repo.create({ ...data, password: hashedPassword, role: UserRole.CENTER })
         await this.repo.save(user)
-
         const plainToken = randomBytes(32).toString('hex')
         const hashedToken = await bcrypt.hash(plainToken, 10)
         const expires = new Date(Date.now() + ms('24h' as StringValue))
@@ -69,10 +94,8 @@ export class AuthService {
             user
         })
         await this.tokenRepo.save(verifyToken)
-
-        const { accessToken, refreshToken } = await this.generateTokens(user)
         await this.mailService.sendWelcome(user.email, user.firstName, plainToken)
-        return { user, accessToken, refreshToken }
+        return { user }
     }
 
     async signin(data: LoginDto) {

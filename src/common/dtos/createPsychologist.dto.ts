@@ -1,8 +1,8 @@
-import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from "class-validator"
-import { Gender, UserRole } from "../types"
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
+import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from "class-validator"
+import { Gender } from "../types"
 
-export class CreateUserDto {
+export class CreatePsychologistDto {
     @ApiProperty()
     @IsEmail()
     email: string
@@ -24,12 +24,6 @@ export class CreateUserDto {
     @ApiProperty({ enum: Gender })
     @IsEnum(Gender)
     gender: Gender;
-
-    // @ApiProperty({ enum: [UserRole.PATIENT, UserRole.PSYCHOLOGIST] })
-    // @IsEnum([UserRole.PATIENT, UserRole.PSYCHOLOGIST], {
-    //     message: 'Role yalnız patient və ya psychologist ola bilər'
-    // })
-    // role: UserRole
 
     @ApiPropertyOptional()
     @IsOptional()

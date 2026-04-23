@@ -12,7 +12,7 @@ import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
-    // TypeOrmModule.forRoot({ //! production-da Postgresql-e kecilsin
+    // TypeOrmModule.forRoot({ //! production-da Postgresql-e kecilmesi istenilse
     //   type: 'postgres',
     //   host: 'localhost',
     //   port: 5432,
@@ -22,11 +22,11 @@ import { MailModule } from './mail/mail.module';
     //   entities: [__dirname + '/**/*.entity{.ts,.js}'],
     //   synchronize: false // Yalnız development-də true
     // }),
-    TypeOrmModule.forRoot({ //! Muveqqeti olaraq Sqlite istifadesi
+    TypeOrmModule.forRoot({ // Muveqqeti olaraq Sqlite istifadesi
       type: 'sqlite',
       database: 'psytalk_dev.db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+      synchronize: true, //! Production-da false ele
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 5 }]),

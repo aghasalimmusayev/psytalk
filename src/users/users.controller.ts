@@ -18,9 +18,17 @@ export class UsersController {
     constructor(private userService: UsersService) { }
 
     @Get('/all')
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles('admin')
     @Serialize(UserProfileDto)
     getAllUsers() {
         return this.userService.getAll()
+    }
+
+    @Get('/psychologists')
+    @Serialize(UserProfileDto)
+    getPsychologists() {
+        return this.userService.getPsychologists()
     }
 
     @Patch('/change-password/:id')

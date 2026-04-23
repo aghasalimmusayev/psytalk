@@ -1,9 +1,27 @@
+Admin:
+   - id: 1
+   - email: aga77ams@gmail.com
+   - password: Admin@123456
+   - role: admin
+User1:
+   - id: 2
+   - email: aga77ams@hotmail.com
+   - password: ams123456
+   - role: patient
+User2:
+   - id: 3
+   - email: mehdi21musayev@gmail.com
+   - password: mhd123456
+   - role: psychologist
+
 <!--Todo * googleId meselesi barede hec bir is gorulmedi -->
 <!--Todo * Postgresql-e kecilse, deyisilesi yerler -->
    - CommonEntity
    - app.module
    - user.entity
    - token.entity
+<!--Todo * Diplom add endpointi yaradilmalidir, update user-den elave olmalidir -->
+<!--Todo * Sened elave etmek ucun yeni bir module yaratmaq lazimdi -->
 <!--Todo * EmailVerification - Frontendde nezerden kecirilmelidir -->
 📧 emailVerificationToken
 1. User qeydiyyatdan keçir
@@ -98,3 +116,10 @@ Commit10
 Commit11
    - VerifyUserByAdmin
    - README.md updated
+
+Commit12
+   - Create psychologist by Admin created
+   - DocumentEntity added for adding diplom & sertificates in future
+   - Gender selection added to createUser endpoints
+   - Get all psychologists endpoint created
+   - Admin role added to getAllUsers
