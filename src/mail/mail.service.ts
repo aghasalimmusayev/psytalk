@@ -20,7 +20,7 @@ export class MailService {
         })
     }
 
-    async welcomePsychologist(email: string, firstName: string, verificationToken: string) {
+    async sendWelcomePsychologist(email: string, firstName: string, verificationToken: string) {
         const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`
         await this.mailService.sendMail({
             to: email,

@@ -72,7 +72,7 @@ export class AuthService {
             user
         })
         await this.tokenRepo.save(verifyToken)
-        await this.mailService.welcomePsychologist(user.email, user.firstName, plainToken)
+        await this.mailService.sendWelcomePsychologist(user.email, user.firstName, plainToken)
         return { user }
     }
 

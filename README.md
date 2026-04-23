@@ -34,7 +34,7 @@
 | Rol | Açıqlama |
 |-----|----------|
 | `patient` | Platforma istifadəçisi — psixoloq seçib seans keçirən şəxs |
-| `psychologist` | Fərdi psixoloq — qeydiyyatdan keçir, diplom yükləyir, admin təsdiqini gözləyir |
+| `psychologist` | Fərdi psixoloq — admin tərəfindən qeydiyyatdan keçirilir, diplom ve s. lazım olan məlumatları yükləyir, admin təsdiqini gözləyir |
 | `center` | Psixoloji mərkəz — yalnız admin tərəfindən yaradılır |
 | `admin` | Platforma administratoru — yalnız `seed.ts` vasitəsilə yaradılır |
 
@@ -199,7 +199,8 @@ MAIL_FROM=noreply@psytalk.az
 
 | Metod | Endpoint | Açıqlama | Qorunur? |
 |-------|----------|----------|----------|
-| `POST` | `/auth/rergister` | Patient/Psychologist qeydiyyatı + email doğrulama linki | ❌ |
+| `POST` | `/auth/rergister` | Patient qeydiyyatı + email doğrulama linki | ❌ |
+| `POST` | `/auth/psychologist` | Psychologist qeydiyyatı + email doğrulama linki | ✅ Admin only |
 | `POST` | `/auth/login` | Giriş — access + refresh token | ❌ |
 | `POST` | `/auth/center` | Mərkəz qeydiyyatı | ✅ Admin only |
 | `GET`  | `/auth/email-verify?token=` | Email doğrulama | ❌ |
@@ -212,7 +213,8 @@ MAIL_FROM=noreply@psytalk.az
 
 | Metod | Endpoint | Açıqlama | Qorunur? |
 |-------|----------|----------|----------|
-| `GET` | `/users/all` | Bütün istifadəçiləri gətir | ❌ |
+| `GET` | `/users/all` | Bütün istifadəçiləri gətir | ✅ Admin only |
+| `GET` | `/users/psychologists` | Bütün psixoloqları gətir | ❌ |
 | `GET` | `/users/profile` | Cari istifadəçinin profili | ✅ |
 | `PATCH` | `/users/:id` | Profil yeniləmə (yalnız öz profili) | ✅ |
 | `PATCH` | `/users/change-password/:id` | Şifrə dəyişmə (yalnız öz profili) | ✅ |
@@ -223,7 +225,7 @@ MAIL_FROM=noreply@psytalk.az
 
 ## 🔑 Auth Sistemi
 
-### Patient / Psychologist qeydiyyat axını
+### Patient qeydiyyat axını
 
 ```
 POST /auth/rergister
@@ -238,6 +240,26 @@ Welcome email göndərilir (doğrulama linki ilə)
   ↓
 Refresh token → httpOnly cookie-yə yazılır
 Access token → response body-sində qaytarılır
+```
+
+### Psixoloq qeydiyyat axını (Admin only)
+
+```
+POST /auth/psychologist
+  ↓
+AuthGuard: JWT access token yoxlanılır
+RoleGuard: user.role === 'admin' yoxlanılır
+  ↓
+role backend-də 'psychologist' olaraq təyin edilir (DTO-dan gəlmir)
+  ↓
+Şifrə hash-lanır (bcrypt)
+  ↓
+User DB-yə yazılır
+  ↓
+EMAIL_VERIFY token yaranır → TokenEntity-ə yazılır
+  ↓
+Welcome email göndərilir (doğrulama linki ilə)
+  ↓
 ```
 
 ### Mərkəz qeydiyyat axını (Admin only)
@@ -258,8 +280,6 @@ EMAIL_VERIFY token yaranır → TokenEntity-ə yazılır
   ↓
 Welcome email göndərilir (doğrulama linki ilə)
   ↓
-Refresh token → httpOnly cookie-yə yazılır
-Access token → response body-sində qaytarılır
 ```
 
 ### Login axını
@@ -348,7 +368,8 @@ enum TokenType {
 
 | Funksiya | Tetikleyici | Şablon |
 |----------|-------------|--------|
-| `sendWelcome()` | Qeydiyyat | `welcome.hbs` |
+| `sendWelcome()` | Patient qeydiyyatı | `welcome.hbs` |
+| `sendWelcomePsychologist()` | Psixoloq qeydiyyatı | `welcomePsychologist.hbs` |
 | `sendEmailVerified()` | Email doğrulandıqda | `emailVerified.hbs` |
 | `sendAccountActivated()` | Account aktivlədirilməsi doğrulandıqda | `accountActivated.hbs` |
 | `sendResetLink()` | Şifrə sıfırlama sorğusu | `passwordReset.hbs` |
@@ -491,11 +512,12 @@ enum UserRole {
 
 | Endpoint | İcazəli rollar | Necə təyin olunur? |
 |----------|---------------|-------------------|
-| `POST /auth/rergister` | `patient`, `psychologist` | DTO-dan gəlir, `@IsEnum` ilə məhdudlaşdırılıb |
+| `POST /auth/rergister` | `patient` | Backend-də hardcode edilir, DTO-dan gəlmir |
+| `POST /auth/psychologist` | `psychologist` | Backend-də hardcode edilir, DTO-dan gəlmir |
 | `POST /auth/center` | `center` | Backend-də hardcode edilir, DTO-dan gəlmir |
 | `seed.ts` | `admin` | Script vasitəsilə birbaşa DB-yə yazılır |
 
-**Qeyd:** Rol əsaslı sahə filtrasiyası **frontend tərəfindən** həyata keçirilir. Backend tək `UpdateUserDto` qəbul edir. Məsələn, psixoloq üçün `diplomaUrl` sahəsi yalnız frontend-də göstərilir.
+**Qeyd:** Rol əsaslı sahə filtrasiyası **frontend tərəfindən** həyata keçirilir. Backend tək `UpdateUserDto` qəbul edir.
 
 ---
 
@@ -510,8 +532,8 @@ npm run seed
 Script artıq admin mövcuddursa ikinci dəfə yaratmır:
 
 ```
-Admin artıq mövcuddur   # əgər varsa
-Admin uğurla yaradıldı ✅  # əgər yoxdursa
+Admin already exists   # əgər varsa
+Admin created succesfully ✅  # əgər yoxdursa
 ```
 
 `package.json`-da script:
@@ -541,7 +563,7 @@ Qorunan endpointləri test etmək üçün:
 
 ### Növbəti addımlar
 
-- [ ] SQLite → PostgreSQL miqrasiyası (schema sabitləşdikdən sonra)
+- [ ] SQLite → PostgreSQL miqrasiyası (schema sabitləşdikdən sonra - İstəyə bağlı)
 - [ ] Real domain alınması — `CLIENT_URL` placeholder əvəzinə
 - [ ] Frontend — rol əsaslı şərti rendering (psixoloq/pasiyent profil səhifəsi)
 

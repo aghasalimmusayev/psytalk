@@ -123,3 +123,25 @@ Commit12
    - Gender selection added to createUser endpoints
    - Get all psychologists endpoint created
    - Admin role added to getAllUsers
+
+## User:
+- email: string;
+- password: string;
+- role: ['patient','psychologist','admin','center'];
+- authProvider: ['local','google'];
+- firstName: string;
+- lastName: string;
+- phone: string;
+- dateOfBirth: Date;
+- gender: ["MALE","FEMALE"];
+- avatarUrl: string;
+- googleId: string; // Google OAuth üçün
+- isEmailVerified: boolean;
+- isActive: boolean;
+- isAnonymous: boolean; // Biznes planında anonimlik var
+- walletBalance: number;
+- bio: string;
+- specializations: string[]; // Anxiety, Depression, Family...
+- documents: ['diplom','sertificate','licience'];
+- sessionPrice: number;
+- experience: number; // İl sayı
