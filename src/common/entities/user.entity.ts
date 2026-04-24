@@ -36,6 +36,9 @@ export class User extends CommonEntity {
     @Column({ type: 'varchar' })
     gender: Gender;
 
+    @Column({ type: 'decimal', precision: 2, scale: 1, default: 0 })
+    rating: number;
+
     @Column({ nullable: true })
     avatarUrl: string;
 
